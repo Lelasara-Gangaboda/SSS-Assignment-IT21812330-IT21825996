@@ -51,6 +51,11 @@ const Home = () => {
       dispatch(setOnlineUser(data))
     })
 
+    socketConnection.on('vulgar_word',(data)=>{
+      alert("Vulgar word detected")
+      dispatch(setOnlineUser(data))
+    })
+
     dispatch(setSocketConnection(socketConnection))
 
     return ()=>{

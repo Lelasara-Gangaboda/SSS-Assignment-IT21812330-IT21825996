@@ -5,6 +5,7 @@ const getUserDetailsFromToken = require('../helpers/getUserDetailsFromToken')
 const UserModel = require('../models/UserModel')
 const { ConversationModel,MessageModel } = require('../models/ConversationModel')
 const getConversation = require('../helpers/getConversation')
+const { checkForVulgarWords } = require('../helpers/checkForVulgarWords')
 
 const app = express()
 
@@ -66,10 +67,13 @@ io.on('connection',async(socket)=>{
     })
 
 
-    //new message
+    //if new message comes
     socket.on('new message',async(data)=>{
-
         //check conversation is available both user
+        if(!!data?.text && await checkForVulgarWords(data?.text)) {
+            io.to(data?.sender).emit('vulgar_word', "Yes")
+            return;
+        }
 
         let conversation = await ConversationModel.findOne({
             "$or" : [
